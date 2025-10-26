@@ -1,112 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Clarity Corner | theinspoarchives</title>
 <style>
   :root {
-    --bg:#f4f3ef;
-    --accent:#a8bfb8;
-    --text:#333;
+    --bg: #f6f5f1;
+    --panel: #ffffffb8;
+    --accent: #a8bfb8;
+    --text: #2f2f2f;
   }
-  *{box-sizing:border-box;font-family:"Inter",sans-serif;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    text-align:center;
-    gap:2rem;
+  * {
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+    transition: all 0.3s ease;
   }
-  h1{font-weight:500;letter-spacing:1px;}
-  section{width:90%;max-width:400px;padding:1rem;border:1px solid #ddd;border-radius:16px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
-  button{
-    border:none;
-    background:var(--accent);
-    color:white;
-    padding:0.6rem 1.2rem;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:1rem;
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
   }
-  button:hover{opacity:0.9;}
-  #affirmation{font-style:italic;font-size:1.1rem;min-height:2.5rem;}
-  #timer,#countdown,#voidOutput{font-size:1.2rem;margin-top:0.5rem;}
-  input[type="text"]{
-    width:100%;
-    padding:0.7rem;
-    border:1px solid #ccc;
-    border-radius:8px;
+
+  /* floating background icons */
+  .float {
+    position: absolute;
+    opacity: 0.08;
+    font-size: 2rem;
+    animation: drift 40s linear infinite;
   }
-  .small{font-size:0.85rem;color:#666;}
+  @keyframes drift {
+    from { transform: translateY(100vh) rotate(0deg); }
+    to { transform: translateY(-10vh) rotate(360deg); }
+  }
+
+  header {
+    text-align: center;
+    padding: 1.5rem;
+  }
+  h1 {
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding-bottom: 4rem;
+  }
+  section {
+    background: var(--panel);
+    width: 90%;
+    max-width: 400px;
+    padding: 1.2rem 1rem;
+    border-radius: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-align: center;
+  }
+
+  button {
+    border: none;
+    background: var(--accent);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  button:hover {
+    opacity: 0.9;
+  }
+
+  #affirmation {
+    font-style: italic;
+    font-size: 1.1rem;
+    min-height: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* timers */
+  #timer,
+  #countdown {
+    font-size: 1.3rem;
+    margin-top: 0.5rem;
+  }
+  #timer.big,
+  #countdown.big {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    background: var(--accent);
+    color: white;
+    font-size: 4rem;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+  }
+  #countOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #f6f5f1;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10rem;
+    z-index: 20;
+    display: none;
+  }
+
+  /* void */
+  input[type="text"] {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  .small {
+    font-size: 0.85rem;
+    color: #666;
+  }
 </style>
 </head>
 <body>
 
-<h1>🕊 Clarity Corner</h1>
+<!-- floating icons -->
+<span class="float" style="left:5%;animation-delay:0s;">☁️</span>
+<span class="float" style="left:25%;animation-delay:10s;">⭐</span>
+<span class="float" style="left:45%;animation-delay:20s;">💫</span>
+<span class="float" style="left:65%;animation-delay:5s;">🌸</span>
+<span class="float" style="left:85%;animation-delay:15s;">💛</span>
 
-<!-- Affirmations -->
-<section>
-  <h2>Affirmation</h2>
-  <div id="affirmation">Take a deep breath.</div>
-  <button onclick="nextAffirmation()">Next</button>
-</section>
+<header>
+  <h1>🕊 Clarity Corner</h1>
+</header>
 
-<!-- Pomodoro -->
-<section>
-  <h2>Pomodoro Timer</h2>
-  <div id="timer">25:00</div>
-  <button onclick="startPomodoro()">Start</button>
-  <button onclick="resetPomodoro()">Reset</button>
-  <p class="small">25-minute focus • 5-minute break</p>
-</section>
+<main>
+  <section id="nameSection">
+    <h2>Your Name</h2>
+    <p class="small">So affirmations can speak to you directly</p>
+    <input id="nameInput" placeholder="Enter your name" />
+    <button onclick="saveName()">Save</button>
+  </section>
 
-<!-- 3-2-1 Countdown -->
-<section>
-  <h2>3-2-1 Start</h2>
-  <div id="countdown">Ready?</div>
-  <button onclick="threeTwoOne()">Go</button>
-</section>
+  <section>
+    <h2>Affirmation</h2>
+    <div id="affirmation">Take a deep breath.</div>
+    <button onclick="nextAffirmation()">Next</button>
+  </section>
 
-<!-- The Void -->
-<section>
-  <h2>The Void</h2>
-  <p class="small">Type a thought and press Enter to release it</p>
-  <input type="text" id="voidInput" placeholder="Type here...">
-  <div id="voidOutput"></div>
-</section>
+  <section>
+    <h2>Pomodoro Timer</h2>
+    <div id="timer">25:00</div>
+    <button onclick="startPomodoro()">Start</button>
+    <button onclick="resetPomodoro()">Reset</button>
+    <p class="small">25-minute focus • 5-minute break</p>
+  </section>
+
+  <section>
+    <h2>3-2-1 Start</h2>
+    <div id="countdown">Ready?</div>
+    <button onclick="threeTwoOne()">Go</button>
+  </section>
+
+  <section>
+    <h2>The Void</h2>
+    <p class="small">Type a thought and press Enter to release it</p>
+    <input type="text" id="voidInput" placeholder="Type here..." />
+    <div id="voidOutput"></div>
+  </section>
+</main>
+
+<div id="countOverlay"></div>
 
 <script>
+// ---------- Name memory ----------
+const nameKey="cc_username";
+let userName=localStorage.getItem(nameKey)||"";
+const nameSection=document.getElementById("nameSection");
+const nameInput=document.getElementById("nameInput");
+
+if(userName){
+  nameSection.style.display="none";
+}else{
+  nameSection.style.display="block";
+}
+
+function saveName(){
+  const val=nameInput.value.trim();
+  if(!val)return;
+  localStorage.setItem(nameKey,val);
+  userName=val;
+  nameSection.style.display="none";
+}
+
 // ---------- Affirmations ----------
 const affirmations=[
   "I am not my thoughts.",
   "Clarity comes when I slow down.",
   "I don't have to solve everything today.",
   "Peace begins with a single breath.",
-  "It’s okay not to have the answer yet."
+  "It's okay not to have the answer yet.",
+  "I release what I cannot control.",
+  "Small steps are progress.",
+  "Stillness is productive.",
+  "I can trust my pace.",
+  "My thoughts don’t define me.",
+  "Rest is a form of growth.",
+  "I am learning to let go.",
+  "Today is a new start.",
+  "Everything doesn’t need to be perfect.",
+  "I am safe in the present moment.",
+  "I give myself permission to pause.",
+  "I can start again anytime.",
+  "I deserve calm.",
+  "Slow is beautiful.",
+  "I am doing my best.",
+  "I can simplify this.",
+  "I choose gentle progress.",
+  "There is strength in softness.",
+  "Peace is possible right now.",
+  "I can handle this moment.",
+  "I allow clarity to come.",
+  "I am centered and focused.",
+  "The answers will appear in time.",
+  "My worth is not measured by productivity.",
+  "I let go of overthinking.",
+  "I am grounded and calm.",
+  "I am allowed to make mistakes.",
+  "I forgive myself easily.",
+  "Presence is my power.",
+  "I breathe in peace, exhale tension.",
+  "I create space for clarity.",
+  "I honor my energy.",
+  "I can trust my journey.",
+  "I am becoming who I’m meant to be.",
+  "This too shall pass.",
+  "I can focus on one thing at a time.",
+  "I am calm within the storm.",
+  "My mind is a safe space.",
+  "Peace begins with acceptance.",
+  "I am kind to myself.",
+  "My body knows how to relax.",
+  "Every breath resets me.",
+  "Stillness brings answers.",
+  "I am guided and supported.",
+  "I let go of what’s heavy.",
+  "I am here now."
 ];
-let affIndex=0;
 function nextAffirmation(){
-  affIndex=(affIndex+1)%affirmations.length;
-  document.getElementById('affirmation').textContent=affirmations[affIndex];
+  const a=affirmations[Math.floor(Math.random()*affirmations.length)];
+  const text=userName?`${userName}, ${a}`:a;
+  document.getElementById("affirmation").textContent=text;
 }
 
 // ---------- Pomodoro ----------
 let pomodoroInterval;
 let timeLeft=25*60;
 let onBreak=false;
+const timerDisplay=document.getElementById("timer");
 function displayTime(){
   const m=Math.floor(timeLeft/60).toString().padStart(2,"0");
   const s=(timeLeft%60).toString().padStart(2,"0");
-  document.getElementById("timer").textContent=`${m}:${s}`;
+  timerDisplay.textContent=`${m}:${s}`;
 }
 function startPomodoro(){
   clearInterval(pomodoroInterval);
+  timerDisplay.classList.add("big");
   pomodoroInterval=setInterval(()=>{
     if(timeLeft>0){timeLeft--;displayTime();}
     else{
@@ -119,21 +286,24 @@ function startPomodoro(){
 }
 function resetPomodoro(){
   clearInterval(pomodoroInterval);
-  timeLeft=25*60;
-  onBreak=false;
-  displayTime();
+  timeLeft=25*60;onBreak=false;displayTime();
+  timerDisplay.classList.remove("big");
 }
 displayTime();
 
 // ---------- 3-2-1 Countdown ----------
 function threeTwoOne(){
-  const cd=document.getElementById("countdown");
+  const overlay=document.getElementById("countOverlay");
+  overlay.style.display="flex";
   const steps=["3","2","1","Go!"];
   let i=0;
   const interval=setInterval(()=>{
-    cd.textContent=steps[i];
+    overlay.textContent=steps[i];
     i++;
-    if(i>=steps.length){clearInterval(interval);}
+    if(i>=steps.length){
+      clearInterval(interval);
+      setTimeout(()=>{overlay.style.display="none";},700);
+    }
   },800);
 }
 
@@ -151,6 +321,5 @@ input.addEventListener("keydown",e=>{
   }
 });
 </script>
-
 </body>
 </html>
