@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clarity Corner | theinspoarchives</title>
+<style>
+  :root {
+    --bg:#f4f3ef;
+    --accent:#a8bfb8;
+    --text:#333;
+  }
+  *{box-sizing:border-box;font-family:"Inter",sans-serif;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    text-align:center;
+    gap:2rem;
+  }
+  h1{font-weight:500;letter-spacing:1px;}
+  section{width:90%;max-width:400px;padding:1rem;border:1px solid #ddd;border-radius:16px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+  button{
+    border:none;
+    background:var(--accent);
+    color:white;
+    padding:0.6rem 1.2rem;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:1rem;
+  }
+  button:hover{opacity:0.9;}
+  #affirmation{font-style:italic;font-size:1.1rem;min-height:2.5rem;}
+  #timer,#countdown,#voidOutput{font-size:1.2rem;margin-top:0.5rem;}
+  input[type="text"]{
+    width:100%;
+    padding:0.7rem;
+    border:1px solid #ccc;
+    border-radius:8px;
+  }
+  .small{font-size:0.85rem;color:#666;}
+</style>
+</head>
+<body>
+
+<h1>🕊 Clarity Corner</h1>
+
+<!-- Affirmations -->
+<section>
+  <h2>Affirmation</h2>
+  <div id="affirmation">Take a deep breath.</div>
+  <button onclick="nextAffirmation()">Next</button>
+</section>
+
+<!-- Pomodoro -->
+<section>
+  <h2>Pomodoro Timer</h2>
+  <div id="timer">25:00</div>
+  <button onclick="startPomodoro()">Start</button>
+  <button onclick="resetPomodoro()">Reset</button>
+  <p class="small">25-minute focus • 5-minute break</p>
+</section>
+
+<!-- 3-2-1 Countdown -->
+<section>
+  <h2>3-2-1 Start</h2>
+  <div id="countdown">Ready?</div>
+  <button onclick="threeTwoOne()">Go</button>
+</section>
+
+<!-- The Void -->
+<section>
+  <h2>The Void</h2>
+  <p class="small">Type a thought and press Enter to release it</p>
+  <input type="text" id="voidInput" placeholder="Type here...">
+  <div id="voidOutput"></div>
+</section>
+
+<script>
+// ---------- Affirmations ----------
+const affirmations=[
+  "I am not my thoughts.",
+  "Clarity comes when I slow down.",
+  "I don't have to solve everything today.",
+  "Peace begins with a single breath.",
+  "It’s okay not to have the answer yet."
+];
+let affIndex=0;
+function nextAffirmation(){
+  affIndex=(affIndex+1)%affirmations.length;
+  document.getElementById('affirmation').textContent=affirmations[affIndex];
+}
+
+// ---------- Pomodoro ----------
+let pomodoroInterval;
+let timeLeft=25*60;
+let onBreak=false;
+function displayTime(){
+  const m=Math.floor(timeLeft/60).toString().padStart(2,"0");
+  const s=(timeLeft%60).toString().padStart(2,"0");
+  document.getElementById("timer").textContent=`${m}:${s}`;
+}
+function startPomodoro(){
+  clearInterval(pomodoroInterval);
+  pomodoroInterval=setInterval(()=>{
+    if(timeLeft>0){timeLeft--;displayTime();}
+    else{
+      onBreak=!onBreak;
+      timeLeft=onBreak?5*60:25*60;
+      displayTime();
+      alert(onBreak?"Break time!":"Back to focus!");
+    }
+  },1000);
+}
+function resetPomodoro(){
+  clearInterval(pomodoroInterval);
+  timeLeft=25*60;
+  onBreak=false;
+  displayTime();
+}
+displayTime();
+
+// ---------- 3-2-1 Countdown ----------
+function threeTwoOne(){
+  const cd=document.getElementById("countdown");
+  const steps=["3","2","1","Go!"];
+  let i=0;
+  const interval=setInterval(()=>{
+    cd.textContent=steps[i];
+    i++;
+    if(i>=steps.length){clearInterval(interval);}
+  },800);
+}
+
+// ---------- The Void ----------
+const input=document.getElementById("voidInput");
+const out=document.getElementById("voidOutput");
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const txt=input.value.trim();
+    if(!txt)return;
+    input.value="";
+    out.textContent="Released.";
+    setTimeout(()=>out.textContent="",1000);
+  }
+});
+</script>
+
+</body>
+</html>
